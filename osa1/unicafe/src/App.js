@@ -38,6 +38,12 @@ const App = () => {
       <Display counter={bad}
         text='bad' />
 
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+      />
+
     </div>
   )
 }
@@ -66,4 +72,19 @@ const Button = ({ handleClick, text }) => (
   </button>
 )
 
+const Statistics = (props) => {
+  const total = props.good + props.neutral + props.bad
+  const average = (props.good * 1 + props.neutral * 0 + props.bad * -1) / total
+  const positive = (props.good / total) * 100
+
+  return (
+    <p>
+      total {total}<br />
+      average {average}<br />
+      positive {positive}%
+
+    </p>
+
+  )
+}
 export default App
