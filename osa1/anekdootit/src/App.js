@@ -32,7 +32,7 @@ const App = () => {
       <Button handleClick={addVote} text="vote" /><br />
       <Header text='Anecdote with most votes' />
       {anecdotes[maxPoints]}<br />
-      has {(Math.max(...points))} votes
+      has {points[maxPoints]} votes
 
     </div>
   )
