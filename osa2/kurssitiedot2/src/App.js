@@ -4,15 +4,18 @@ const App = () => {
     parts: [
       {
         name: 'Fundamentals of React',
-        exercises: 10
+        exercises: 10,
+        id: 1
       },
       {
         name: 'Using props to pass data',
-        exercises: 7
+        exercises: 7,
+        id: 2
       },
       {
         name: 'State of a component',
-        exercises: 14
+        exercises: 14,
+        id: 3
       }
     ]
   }
@@ -45,9 +48,9 @@ const Header = ({ header }) => {
 const Content = ({ parts }) => {
   return (
     <div>
-      <Part part={parts[0]} />
-      <Part part={parts[1]} />
-      <Part part={parts[2]} />
+      {parts.map(part =>
+        <Part key={part.id} part={part} />
+      )}
     </div>
   )
 }
@@ -62,9 +65,12 @@ const Part = ({ part }) => {
 }
 
 const Total = ({ parts }) => {
+  const value = parts.reduce((sum, part) => sum + part.exercises, 0)
   return (
     <div>
-      Number of exercises {parts[0].exercises + parts[1].exercises + parts[2].exercises}
+      <h4>
+        Total of {value} exercises
+      </h4>
     </div>
   )
 }
