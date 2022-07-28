@@ -11,6 +11,55 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
 
+  const handleNameChange = (event) => {
+    console.log(event.target.value)
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    console.log(event.target.value)
+    setNewNumber(event.target.value)
+  }
+
+  const handleFilterChange = (event) => {
+    console.log(event.target.value)
+    setNewFilter(event.target.value)
+  }
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
+      <ContactForm setPersons={setPersons} persons={persons}
+        newName={newName} setNewName={setNewName}
+        newNumber={newNumber} setNewNumber={setNewNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} />
+      <ContactList newFilter={newFilter} persons={persons} />
+    </div>
+  )
+
+}
+
+const Contact = ({ person }) => {
+  return (
+    <p>{person.name} {person.number} </p>
+  )
+}
+
+const Filter = ({ newFilter, handleFilterChange }) => {
+
+
+
+
+  return (
+    <div> <h3>Filter</h3>
+      Filter shown with: <input
+        value={newFilter}
+        onChange={handleFilterChange} /></div>
+  )
+}
+
+const ContactForm = ({ newName, newNumber, setNewName, setNewNumber, setPersons, persons, handleNameChange, handleNumberChange }) => {
+
   const addContact = (event) => {
 
     event.preventDefault()
@@ -32,31 +81,10 @@ const App = () => {
     }
   }
 
-  const handleNameChange = (event) => {
-    console.log(event.target.value)
-    setNewName(event.target.value)
-  }
-  const handleNumberChange = (event) => {
-    console.log(event.target.value)
-    setNewNumber(event.target.value)
-  }
-  const handleFilterChange = (event) => {
-    console.log(event.target.value)
-    setNewFilter(event.target.value)
-  }
-
-  const visiblePersons = (newFilter && newFilter.length > 0)
-    ? persons.filter(({ name }) => name.toLowerCase().includes(newFilter.toLowerCase()))
-    : persons
 
   return (
     <div>
-      <h2>Phonebook</h2>
-      <h2>Filter</h2>
-      Filter shown with: <input
-        value={newFilter}
-        onChange={handleFilterChange} />
-      <h2>Add new</h2>
+      <h3>Add new</h3>
       <form onSubmit={addContact}>
         <div>
           name: <input
@@ -72,20 +100,23 @@ const App = () => {
           </div>
         </div>
       </form>
+    </div>)
+}
 
-      <h2>Numbers</h2>
+const ContactList = ({ newFilter, persons }) => {
+  const visiblePersons = (newFilter && newFilter.length > 0)
+    ? persons.filter(({ name }) => name.toLowerCase().includes(newFilter.toLowerCase()))
+    : persons
+  return (
+    <div>
+      <h3>Numbers</h3>
       {visiblePersons.map(person =>
         <Contact key={person.name} person={person} />
       )}
     </div>
   )
-
-}
-
-const Contact = ({ person }) => {
-  return (
-    <p>{person.name} {person.number} </p>
-  )
 }
 
 export default App
+
+
