@@ -58,10 +58,9 @@ const Filter = ({ newFilter, handleFilterChange }) => {
 
 const Weather = ({ country }) => {
   const api_key = process.env.REACT_APP_API_KEY;
-  const [temperature, setTemperature] = useState([]);
-  const [wind, setWind] = useState([]);
-
-  const [icon, setIcon] = useState([]);
+  const [temperature, setTemperature] = useState();
+  const [wind, setWind] = useState();
+  const [icon, setIcon] = useState();
 
   useEffect(() => {
     axios
@@ -72,19 +71,20 @@ const Weather = ({ country }) => {
         setTemperature(response.data.main.temp);
         setWind(response.data.wind.speed);
         setIcon(response.data.weather[0].icon);
-        console.log(icon);
       });
   }, []);
 
   return (
     <div>
       <h3>Weather in {country.capital}</h3>
-      <p>Temperature: {temperature} Celcius</p>
-      <img
-        src={`http://openweathermap.org/img/wn/${icon}@2x.png`}
-        alt="weather icon"
-      />
-      <p>Wind: {wind} m/s</p>
+      {temperature !== undefined && <p>Temperature: {temperature} Celcius</p>}
+      {icon !== undefined && (
+        <img
+          src={`http://openweathermap.org/img/wn/${icon}@2x.png`}
+          alt="weather icon"
+        />
+      )}
+      {wind !== undefined && <p>Wind: {wind} m/s</p>}
     </div>
   );
 };
