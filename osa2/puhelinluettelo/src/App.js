@@ -108,21 +108,33 @@ const ContactForm = ({
   handleNameChange,
   handleNumberChange,
 }) => {
-  const addContact = () => {
+  const addContact = (event) => {
+    event.preventDefault()
     const contactObject = {
       name: newName,
       number: newNumber,
     }
 
     if (persons.some((person) => person.name === newName)) {
-      alert(`Name '${newName}' is already added to the phonebook`)
-    } else if (persons.some((person) => person.number === newNumber)) {
-      alert(`Number '${newNumber}' is already added to the phonebook`)
+      if (
+        window.confirm(
+          `A number for ${newName} already exists, do you want to replace the old number with a new one?`
+        )
+      ) {
+        const newPersons = persons.map((person) => {
+          if (person.name === newName) {
+            PersonService.updatePerson(person.id, contactObject)
+            return { ...person, number: newNumber }
+          }
+          return person
+        })
+        setPersons(newPersons)
+      }
     } else {
-      setPersons(persons.concat(contactObject))
+      setPersons([...persons, contactObject])
+      PersonService.addPerson(contactObject)
       setNewName('')
       setNewNumber('')
-      PersonService.addPerson(contactObject)
     }
   }
 
