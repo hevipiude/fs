@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
+import Notification from './components/Notification'
 import PersonService from './services/PersonService'
+import './App.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState('')
 
   useEffect(() => {
     PersonService.getPersons().then((response) => {
@@ -30,12 +33,47 @@ const App = () => {
       PersonService.removePerson(id).then(() => {
         setPersons((current) => current.filter((person) => person.id !== id))
       })
+      setMessage(`Contact "${person.name}" removed succesfully`)
+      setTimeout(() => {
+        setMessage('')
+      }, 5000)
     }
+  }
+
+  const updateContact = (contactObject) => {
+    const newPersons = persons.map((person) => {
+      if (person.name === contactObject.name) {
+        PersonService.updatePerson(person.id, contactObject)
+        return { ...person, number: contactObject.number }
+      }
+      return person
+    })
+
+    setPersons(newPersons)
+    setMessage(`Contact "${contactObject.name}" updated succesfully`)
+    setNewName('')
+    setNewNumber('')
+    setTimeout(() => {
+      setMessage('')
+    }, 5000)
+  }
+
+  const addContact = (contactObject) => {
+    setPersons([...persons, contactObject])
+    PersonService.addPerson(contactObject)
+    setMessage(`Contact "${contactObject.name}" added succesfully`)
+    setNewName('')
+    setNewNumber('')
+    setTimeout(() => {
+      setMessage('')
+      window.location.reload(false)
+    }, 5000)
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
       <ContactForm
         setPersons={setPersons}
@@ -46,6 +84,8 @@ const App = () => {
         setNewNumber={setNewNumber}
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
+        updateContact={updateContact}
+        addContact={addContact}
       />
       <ContactList
         newFilter={newFilter}
@@ -101,14 +141,13 @@ const Filter = ({ newFilter, handleFilterChange }) => {
 const ContactForm = ({
   newName,
   newNumber,
-  setNewName,
-  setNewNumber,
-  setPersons,
   persons,
   handleNameChange,
   handleNumberChange,
+  updateContact,
+  addContact,
 }) => {
-  const addContact = (event) => {
+  const addOrUpdate = (event) => {
     event.preventDefault()
     const contactObject = {
       name: newName,
@@ -121,27 +160,17 @@ const ContactForm = ({
           `A number for ${newName} already exists, do you want to replace the old number with a new one?`
         )
       ) {
-        const newPersons = persons.map((person) => {
-          if (person.name === newName) {
-            PersonService.updatePerson(person.id, contactObject)
-            return { ...person, number: newNumber }
-          }
-          return person
-        })
-        setPersons(newPersons)
+        updateContact(contactObject)
       }
     } else {
-      setPersons([...persons, contactObject])
-      PersonService.addPerson(contactObject)
-      setNewName('')
-      setNewNumber('')
+      addContact(contactObject)
     }
   }
 
   return (
     <div>
       <h3>Add new</h3>
-      <form onSubmit={addContact}>
+      <form onSubmit={addOrUpdate}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
         </div>
