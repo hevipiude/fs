@@ -25,6 +25,14 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const removeContact = (person, id) => {
+    if (window.confirm(`Delete ${person.name}?`)) {
+      PersonService.removePerson(id).then(() => {
+        setPersons((current) => current.filter((person) => person.id !== id))
+      })
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -39,20 +47,27 @@ const App = () => {
         handleNameChange={handleNameChange}
         handleNumberChange={handleNumberChange}
       />
-      <ContactList newFilter={newFilter} persons={persons} />
+      <ContactList
+        newFilter={newFilter}
+        persons={persons}
+        removeContact={removeContact}
+      />
     </div>
   )
 }
 
-const Contact = ({ person }) => {
+const Contact = ({ person, removeContact }) => {
   return (
     <p>
-      {person.name} {person.number}{' '}
+      {person.name} {person.number}
+      <button type='button' onClick={() => removeContact(person, person.id)}>
+        delete
+      </button>
     </p>
   )
 }
 
-const ContactList = ({ newFilter, persons }) => {
+const ContactList = ({ newFilter, persons, removeContact }) => {
   const visiblePersons =
     newFilter && newFilter.length > 0
       ? persons.filter(({ name }) =>
@@ -63,7 +78,11 @@ const ContactList = ({ newFilter, persons }) => {
     <div>
       <h3>Numbers</h3>
       {visiblePersons.map((person) => (
-        <Contact key={person.name} person={person} />
+        <Contact
+          key={person.name}
+          person={person}
+          removeContact={removeContact}
+        />
       ))}
     </div>
   )
@@ -89,10 +108,7 @@ const ContactForm = ({
   handleNameChange,
   handleNumberChange,
 }) => {
-  const addContact = (event) => {
-    event.preventDefault()
-    console.log('button clicked', event.target)
-
+  const addContact = () => {
     const contactObject = {
       name: newName,
       number: newNumber,
