@@ -1,8 +1,8 @@
-const Notification = ({ message }) => {
+const Notification = ({ message, className }) => {
   if (message === '') {
     return null
   } else {
-    return <div className='success'>{message}</div>
+    return <div className={className}>{message}</div>
   }
 }
 
