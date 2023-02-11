@@ -1,28 +1,28 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const App = () => {
-  const [countries, setCountries] = useState([]);
-  const [newFilter, setNewFilter] = useState("");
+  const [countries, setCountries] = useState([])
+  const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    axios.get("https://restcountries.com/v3.1/all").then((response) => {
-      setCountries(response.data);
-    });
-  }, []);
+    axios.get('https://restcountries.com/v3.1/all').then((response) => {
+      setCountries(response.data)
+    })
+  }, [])
 
   const handleFilterChange = (event) => {
-    console.log(event.target.value);
-    setNewFilter(event.target.value);
-  };
+    console.log(event.target.value)
+    setNewFilter(event.target.value)
+  }
 
   return (
     <div>
       <Filter newFilter={newFilter} handleFilterChange={handleFilterChange} />
       <CountryList newFilter={newFilter} countries={countries} />
     </div>
-  );
-};
+  )
+}
 
 const Country = ({ country }) => {
   return (
@@ -42,25 +42,26 @@ const Country = ({ country }) => {
 
       <Weather country={country} />
     </div>
-  );
-};
+  )
+}
 
 const Filter = ({ newFilter, handleFilterChange }) => {
   return (
     <div>
-      {" "}
+      {' '}
       <h1>Search countries</h1>
-      Filter shown with:{" "}
+      Filter shown with:{' '}
       <input value={newFilter} onChange={handleFilterChange} />
     </div>
-  );
-};
+  )
+}
 
 const Weather = ({ country }) => {
-  const api_key = process.env.REACT_APP_API_KEY;
-  const [temperature, setTemperature] = useState();
-  const [wind, setWind] = useState();
-  const [icon, setIcon] = useState();
+  console.log(country.cca2)
+  const api_key = process.env.REACT_APP_API_KEY
+  const [temperature, setTemperature] = useState()
+  const [wind, setWind] = useState()
+  const [icon, setIcon] = useState()
 
   useEffect(() => {
     axios
@@ -68,11 +69,11 @@ const Weather = ({ country }) => {
         `http://api.openweathermap.org/data/2.5/weather?q=${country.capital}&appid=${api_key}&units=metric`
       )
       .then((response) => {
-        setTemperature(response.data.main.temp);
-        setWind(response.data.wind.speed);
-        setIcon(response.data.weather[0].icon);
-      });
-  }, []);
+        setTemperature(response.data.main.temp)
+        setWind(response.data.wind.speed)
+        setIcon(response.data.weather[0].icon)
+      })
+  }, [])
 
   return (
     <div>
@@ -86,46 +87,55 @@ const Weather = ({ country }) => {
       )}
       {wind !== undefined && <p>Wind: {wind} m/s</p>}
     </div>
-  );
-};
+  )
+}
 
 const CountryList = ({ newFilter, countries }) => {
-  const [selected, setSelected] = useState();
+  const [selected, setSelected] = useState()
 
   const visibleCountry =
     newFilter && newFilter.length > 0
       ? countries.filter(({ name }) =>
           name.common.toLowerCase().includes(newFilter.toLowerCase())
         )
-      : countries;
+      : countries
 
   if (selected) {
     return (
       <Country
         country={countries.find((country) => country.cca2 === selected)}
       />
-    );
-  }
-
-  if (visibleCountry.length > 10) {
-    return (
-      <div>
-        <h3>Too many matches</h3>
-      </div>
-    );
+    )
   }
 
   return (
     <div>
-      <h3>Matching countries</h3>
-      {visibleCountry.map((country) => (
-        <p key={country.name.common}>
-          {country.name.common}
-          <button onClick={() => setSelected(country.cca2)}>{"show"}</button>
-        </p>
-      ))}
+      {visibleCountry.length >= 10 ? (
+        <div>
+          <h3>Too many matches</h3>
+        </div>
+      ) : visibleCountry.length <= 10 && visibleCountry.length > 1 ? (
+        <div>
+          <h3>Matching countries</h3>
+          {visibleCountry.map((country) => (
+            <p key={country.name.common}>
+              {country.name.common}
+              <button onClick={() => setSelected(country.cca2)}>
+                {'show'}
+              </button>
+            </p>
+          ))}
+        </div>
+      ) : (
+        <div>
+          <h3>Matching countries</h3>
+          {visibleCountry.map((country) => (
+            <Country key={country.name.common} country={country} />
+          ))}
+        </div>
+      )}
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
