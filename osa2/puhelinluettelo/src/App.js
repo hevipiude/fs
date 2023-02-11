@@ -101,7 +101,6 @@ const App = () => {
   const addOrUpdate = (e) => {
     e.preventDefault()
     const toFind = persons.find((person) => person.name === newName)
-    console.log(toFind)
     if (toFind) {
       console.log(toFind.id)
       if (
